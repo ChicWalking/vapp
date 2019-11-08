@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.lib" >
+    <application>
+        <provider
+            android:name="com.example.lib.server.BinderProvider"
+            android:authorities="${applicationId}.virtual.service.BinderProvider"
+            android:exported="false"
+            android:process="engine_process_name" />
+    </application>
+</manifest>
