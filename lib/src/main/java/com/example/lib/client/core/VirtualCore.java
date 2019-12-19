@@ -17,7 +17,7 @@ public class VirtualCore {
     private static VirtualCore gCore = new VirtualCore();
     private ProcessType processType;
     private Context context;
-
+    private boolean isStartUp;
 
     private VirtualCore(){
 
@@ -31,20 +31,26 @@ public class VirtualCore {
     }
 
     public  void startup(Context context){
-        this.context = context;
-        IPCBus.initializa(new IServerCache() {
-            @Override
-            public void join(String serverName, IBinder binder) {
-                ServiceCache.addService(serverName, binder);
-            }
+        if (!isStartUp) {
+            this.context = context;
+            IPCBus.initializa(new IServerCache() {
+                @Override
+                public void join(String serverName, IBinder binder) {
+                    ServiceCache.addService(serverName, binder);
+                }
 
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-            @Override
-            public IBinder query(String serverName) throws RemoteException {
-                return ServiceManagerNative.getService(serverName);
-            }
-        });
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+                @Override
+                public IBinder query(String serverName) throws RemoteException {
+                    return ServiceManagerNative.getService(serverName);
+                }
+            });
+            isStartUp = true;
+        }
+    }
 
+    public boolean isStartup() {
+        return isStartUp;
     }
 
     private enum ProcessType {

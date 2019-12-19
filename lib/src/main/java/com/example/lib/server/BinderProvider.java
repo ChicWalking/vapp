@@ -2,6 +2,7 @@ package com.example.lib.server;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,9 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.example.lib.IPC.IPCBus;
+import com.example.lib.client.core.VirtualCore;
+import com.example.lib.client.stub.DaemonService;
 import com.example.lib.server.interfaces.IServiceFetcher;
 
 import androidx.annotation.NonNull;
@@ -22,7 +26,14 @@ public class BinderProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        return false;
+        Context context = getContext();
+        DaemonService.startup(context);
+        if (!VirtualCore.get().isStartup()) {
+            return true;
+        }
+//        VPackageManagerService.systemReady();
+//        IPCBus.register(IPackageManager.class, VPackageManagerService.get());
+        return true;
     }
 
     @Nullable
@@ -67,7 +78,7 @@ public class BinderProvider extends ContentProvider {
     }
 
 
-    private class ServiceFetcher extends IServiceFetcher.Stub {
+    private class  ServiceFetcher extends IServiceFetcher.Stub {
         @Override
         public IBinder getService(String name) throws RemoteException {
             if (name != null) {
